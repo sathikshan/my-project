@@ -1,0 +1,10 @@
+.delIcon-20x20 {
+	width: 20px;
+	height: 20px;
+	background: url(RemoveField.png) no-repeat 50% 50%;
+}
+.addIcon-20x20 {
+	width: 20px;
+	height: 20px;
+	background: url(AddField.png) no-repeat 50% 50%;
+}

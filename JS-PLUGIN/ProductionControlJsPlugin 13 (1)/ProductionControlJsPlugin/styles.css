@@ -1,0 +1,13 @@
+.Popuup .dialogMiddleCenter {
+	background-color: white;
+}
+td:has(>.ProductionControlForm-Scroll) {
+	padding-top: 10px;
+}
+.ProductionControlForm-Grid > tbody > tr:not(:first-child) > td {
+	border-top: 2px solid transparent;
+	border-bottom: 2px solid transparent;
+}
+.Testing {
+	
+}

@@ -1,0 +1,153 @@
+.InspectionAndRepairReportForm-HeaderPanel {
+	padding-bottom: 1px;
+}
+
+.InspectionAndRepairReportForm-ContainerPanel {
+	padding-top: 10px;
+}
+
+.RepairWidget-FlexTable {
+	height: 100% !important;
+}
+
+td:has(>.RepairWidget-FlexTable) {
+	background-color: #fff;
+	border: 1px solid var(--primaryColor);
+	border-radius: 4px;
+}
+
+.RepairWidget-Button {
+	min-width: 80px;
+	border-radius: 4px;
+}
+
+.RepairWidget-Repair {
+	background-color: orange;
+}
+
+.RepairWidget-PriorityRepair {
+	background-color: red;
+}
+
+.InspectionAndRepairReportForm-HeaderScroll {
+	width: 100%;
+	/* Full width of the viewport or parent */
+	height: 100%;
+	overflow: auto;
+	/* Enable horizontal scrolling if needed */
+	display: flex;
+	/* Flexbox to arrange items in a row */
+	gap: 2px;
+	/* Space between child elements */
+	box-sizing: border-box;
+	/* Ensures padding doesn't affect the width */
+}
+
+.InspectionAndRepairReportForm-HeaderScroll>div {
+	flex: 1 1 200px;
+	/* Use available space but allow minimum width */
+	max-width: 300px;
+	/* Optional: Maximum width for larger screens */
+	box-sizing: border-box;
+	/* Includes padding in size calculation */
+}
+
+.InspectionAndRepairReportForm-DNCScroll {
+	width: 100%;
+	height: 100%;
+	overflow: hidden auto;
+	display: flex;
+	gap: 10px;
+	box-sizing: border-box;
+}
+
+.InspectionAndRepairReportForm-DNCScroll>div {
+	flex: 1 1 200px;
+	max-width: "100%";
+	box-sizing: border-box;
+}
+
+.RepairWidget-Green {
+	background-color: green;
+	color: #fff;
+}
+
+.RepairWidget-Yellow {
+	background-color: yellow;
+	color: #000;
+}
+
+.RepairWidget-Red {
+	background-color: red;
+	color: #fff;
+}
+
+.RepairWidgetBG-CMPV {
+	background-color: red;
+}
+
+.RepairWidget-FlexTable-INN {
+	height: auto !important;
+	color: #fff;
+}
+
+td:has(>.RepairWidget-FlexTable-INN) {
+	background-color: #6699ff;
+	border: 1px solid var(--primaryColor);
+	border-radius: 4px;
+}
+
+.RepairWidget-FlexTable-FOR {
+	height: 100% !important;
+	color: #fff;
+}
+
+td:has(>.RepairWidget-FlexTable-FOR) {
+	background-color: #380338;
+	border: 1px solid var(--primaryColor);
+	border-radius: 4px;
+}
+
+.RepairWidget-FlexTable-CMPV {
+	height: auto !important;
+	color: #fff;
+}
+
+td:has(>.RepairWidget-FlexTable-CMPV) {
+	background-color: #86868b;
+	border: 1px solid var(--primaryColor);
+	border-radius: 4px;
+}
+
+.RepairWidget-FlexTable-D22 {
+	height: auto !important;
+	color: #241c1c;
+}
+
+td:has(>.RepairWidget-FlexTable-D22) {
+	background-color: #d5d5db;
+	border: 1px solid var(--primaryColor);
+	border-radius: 4px;
+}
+
+.RepairWidget-FlexTable-SP {
+	height: auto !important;
+	color: #1f1b1b;
+}
+
+td:has(>.RepairWidget-FlexTable-SP) {
+	background-color: #80ffe5;
+	border: 1px solid var(--primaryColor);
+	border-radius: 4px;
+}
+
+.InspectionRepairReport-DNC{
+	overflow: hidden auto;
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+.RefreshButton {
+	display: flex;
+	justify-content: end;
+}
