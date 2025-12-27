@@ -1,0 +1,50 @@
+
+module.exports = {
+    fileNotFound : "File upload error: file not found!",
+    inValidFileType: "Invalid file extension. Only .csv file type are allowed.",
+    fileEmpty: "is empty,Please update the CSV file and proceed to upload!",
+    successResponse : "File uploaded and processed successfully.",
+    checkAndModifyFile: ". Please update the CSV file accordingly to proceed with the upload",
+    duplicateRecord: "Please remove the duplicate records from the CSV file to proceed with the upload.",
+    serverError : "Error processing file. Please try again.",
+    missingColumn: ", Please update the CSV file to proceed with the upload.",
+    ptnIntpreSuccess : "File uploaded and exploded successfully.",
+    NofileFound:"No file uploaded.",
+    PatternName: ["p1", "p2", "n1", "p3", "p4", "n2", "p5", "p6", "n3", "p7", "p8", "n4", "p9", "p10", "n5", "p11", "p12", "n6", "p13", "p14", "n7", "p15", "p16", "n8", "p17", "p18", "n9", "p19", "p20", "n10", "p21", "p22", "n11", "p23", "p24", "n12", "p25", "p26", "n13", "p27", "p28", "n14", "p29", "p30", "n15", "p31", "p32", "n16"],
+    AppendOrOverwrite: ["Append", "Overwrite"],
+    NightShiftPattern : ['n1', 'n2', 'n3', 'n4', 'n5', 'n6', 'n7', 'n8', 'n9', 'n10', 'n11', 'n12', 'n13', 'n14', 'n15', 'n16'],
+    ContinueFromPatternNo: ['p1','p3','p5','p7','p9','p11','p13','p15','p17','p19','p21','p23','p25','p27','p29','p31',''],
+    timeZone : {timeZone: 'Asia/Kolkata',hour12:false},
+    nightShiftEndTime: 345, // 05:45:00
+
+    WarehouseID:1,
+    PrimaryCompanyID:1,
+    WarehousePrimaryCompanyID:1,
+    CostBucketID:1,
+    IsFOC:true,
+    TotalOfLineAmountsInCustomerCurrency:1,
+    IsShippedSeparately:false,
+    InvoiceLineNo:1,
+    TotalOfLineAmountsInLocalCurrency:0.0,
+    UnitPriceOfBillingUOMInLocalCurrency:1,
+    UnitSalesPriceOfStorageUOMInCustomerCurrency:0,
+
+    // csv uploaded file path
+    lineEfficiency: "./upload/LineEfficiency",
+    orderCycle : "./upload/OrderCycle",
+    patternRawDataUpload: "./upload/PatternRawDataUpload",
+    bomTypeMaster: "./upload/BOMTypeMaster",
+    plannedLineStop: "./upload/PlannedLineStop",
+    pqDataUpload : "./upload/PQDataUpload",
+    shiftChangeOver: "./upload/ShiftChangeOver",
+    skuMater: "./upload/SkuMater",
+
+    // Material Procurement Status
+    ToBeOrderedMP: 1,
+    SkippedMP: 2,
+    CancelledMP: 3,
+    OrderedMP: 4,
+    ReceivedMP: 5
+
+
+}

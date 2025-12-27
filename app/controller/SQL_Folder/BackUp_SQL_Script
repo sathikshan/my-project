@@ -1,0 +1,485 @@
+CREATE VIEW SSPCSdbo.v_BOMTypeMaster AS
+    SELECT
+      [DieSetID]
+      ,[DieSet]
+      ,[DieID]
+      ,[NoOfProcess]
+      ,[UDTime]
+      ,[CTTime]
+      ,[QCTime]
+      ,[MaterialChangeoverTimePerChangeOverTime]
+      ,[PalletChangeoverTimePerChangeover]
+      ,[DieStorageBay]
+      ,[SDTime]
+      ,[NoOfPalletPerCycle]
+      ,[MaterialOrderTriggerInSec]
+      ,[ProductionTriggerInSec]
+      ,[ReferenceFileName]
+      ,[CreatedBy]
+      ,[CreatedDateTime]
+      ,[ModifiedBy]
+      ,[ModifiedDateTime]
+  FROM [SSPCSdbo].[BOMTypeMaster]
+
+
+  
+INSERT INTO [dbo].[ViewScreenMapping] 
+
+    ([ViewName], [CreatedBy], [CreatedDate], [ModifiedBy], [ModifiedDate], [ScreenID], [ScreenName], [ViewDisplayName], [CustomViewsID])
+
+VALUES 
+
+    ('SSPCSdbo.v_BOMTypeMaster', '1', GETDATE(), NULL, NULL, 440, NULL, 'BomtypeMasterview', NULL);
+
+	Delete  from [dbo].[ViewScreenMapping]  where ViewName = 'SSPCSdbo.v_BOMTypeMaster'
+
+
+
+	CREATE VIEW SSPCSdbo.v_LineEfficencyMaster AS
+    SELECT
+       [LineID]
+      ,[LineName]
+      ,[Efficiency]
+      ,[ReferenceFileName]
+      ,[CreatedBy]
+      ,[CreatedDateTime]
+      ,[ModifiedBy]
+      ,[ModifiedDateTime]
+  FROM [SSPCSdbo].[LineEfficencyMaster]
+
+  INSERT INTO [dbo].[ViewScreenMapping] 
+    ([ViewName], [CreatedBy], [CreatedDate], [ModifiedBy], [ModifiedDate], [ScreenID], [ScreenName], [ViewDisplayName], [CustomViewsID])
+VALUES 
+    ('SSPCSdbo.v_LineEfficencyMaster', '1', GETDATE(), NULL, NULL, 440, NULL, 'LineEfficencyMasterView', NULL);
+
+	CREATE VIEW SSPCSdbo.v_OrderCycleMaster AS
+    SELECT
+        [OrderCycleID]
+      ,[OrderCycle]
+      ,[LineName]
+      ,[ShiftID]
+      ,[StartTime]
+      ,[EndTime]
+      ,[ReferenceFileName]
+      ,[CreatedBy]
+      ,[CreatedDateTime]
+      ,[ModifiedBy]
+      ,[ModifiedDateTime]
+  FROM [SSPCSdbo].[OrderCycleMaster]
+
+   INSERT INTO [dbo].[ViewScreenMapping] 
+    ([ViewName], [CreatedBy], [CreatedDate], [ModifiedBy], [ModifiedDate], [ScreenID], [ScreenName], [ViewDisplayName], [CustomViewsID])
+VALUES 
+    ('SSPCSdbo.v_OrderCycleMaster', '1', GETDATE(), NULL, NULL, 440, NULL, 'OrderCycleMasterView', NULL);
+
+
+
+	CREATE VIEW SSPCSdbo.v_SKUMaster AS
+    SELECT
+       [SKUID]
+      ,[SKUName]
+      ,[SKUCode]
+      ,[ISSheetWashRequired]
+      ,[ReferenceFileName]
+      ,[CreatedBy]
+      ,[CreatedDateTime]
+      ,[ModifiedBy]
+      ,[ModifiedDateTime]
+  FROM [SSPCSdbo].[SKUMaster]
+
+  INSERT INTO [dbo].[ViewScreenMapping] 
+    ([ViewName], [CreatedBy], [CreatedDate], [ModifiedBy], [ModifiedDate], [ScreenID], [ScreenName], [ViewDisplayName], [CustomViewsID])
+VALUES 
+    ('SSPCSdbo.v_SKUMaster', '1', GETDATE(), NULL, NULL, 440, NULL, 'SKUMasterView', NULL);
+
+
+	CREATE VIEW SSPCSdbo.v_ShiftChangeoverStockMaster AS
+    SELECT
+       [ChangeoverID]
+      ,[LineName]
+      ,[DieSet]
+      ,[ShiftChangeoverKanbans]
+      ,[FromDate]
+      ,[FromShift]
+      ,[ToDate]
+      ,[ToShift]
+      ,[ReferenceFileName]
+      ,[CreatedBy]
+      ,[CreatedDateTime]
+      ,[ModifiedBy]
+      ,[ModifiedDateTime]
+  FROM [SSPCSdbo].[ShiftChangeoverStockMaster]
+
+
+  INSERT INTO [dbo].[ViewScreenMapping] 
+    ([ViewName], [CreatedBy], [CreatedDate], [ModifiedBy], [ModifiedDate], [ScreenID], [ScreenName], [ViewDisplayName], [CustomViewsID])
+VALUES 
+    ('SSPCSdbo.v_ShiftChangeoverStockMaster', '1', GETDATE(), NULL, NULL, 440, NULL, 'ShiftChangeoverStockMasterView', NULL);
+
+
+	
+CREATE VIEW SSPCSdbo.v_PlannedLineStopMaster AS
+    SELECT
+     [LineStopID]
+      ,[LineID]
+      ,[ShiftID]
+      ,[FromDateTime]
+      ,[ToDateTime]
+      ,[Reason]
+      ,[isActive]
+      ,[ReferenceFileName]
+      ,[CreatedBy]
+      ,[CreatedDateTime]
+      ,[ModifiedBy]
+      ,[ModifiedDateTime]
+  FROM [SSPCSdbo].[PlannedLineStopMaster]
+
+
+  INSERT INTO [dbo].[ViewScreenMapping] 
+    ([ViewName], [CreatedBy], [CreatedDate], [ModifiedBy], [ModifiedDate], [ScreenID], [ScreenName], [ViewDisplayName], [CustomViewsID])
+VALUES 
+    ('SSPCSdbo.v_PlannedLineStopMaster', '1', GETDATE(), NULL, NULL, 440, NULL, 'PlannedLineStopMasterView', NULL);
+
+
+CREATE VIEW SSPCSdbo.v_OrderedList AS
+    SELECT
+        [OrderedListID],
+        [PatternInterpretationID],
+        [DieSetID],
+        [LineID],
+        [OrderCycleID],
+        [Material],
+        [MaterialKanbanInCirculation],
+        [OrderDateAndTime],
+        [PatternLotSize],
+        [PatternStartDateAndTime],
+        [POTriggerSec],
+        [skidQty],
+        [Status],
+        [RecommQty],
+        [AdjustmentKanbans],
+        [OrderedQty],
+        [CreatedBy],
+        [CreatedDateTime],
+        [ModifiedBy],
+        [ModifiedDateTime]
+    FROM [SSPCSdbo].[OrderedList]
+
+
+
+INSERT INTO [dbo].[ViewScreenMapping]
+    ([ViewName], [CreatedBy], [CreatedDate], [ModifiedBy], 
+     [ModifiedDate], [ScreenID], [ScreenName], [ViewDisplayName], [CustomViewsID])
+VALUES
+    ('SSPCSdbo.v_OrderedList', '1', GETDATE(), NULL,
+     NULL, 440, NULL, 'OrderedListView', NULL);
+
+
+	
+CREATE VIEW SSPCSdbo.v_OrderedListCalculationsDetails AS
+    SELECT
+        [OrderedListCalculationsDetailsID],
+        [SAPPORefNo],
+        [SAPPORefQty],
+        [OrderedListID ] 
+    FROM [SSPCSdbo].[OrderedListCalculationsDetails]
+
+
+INSERT INTO [dbo].[ViewScreenMapping]
+    ([ViewName], [CreatedBy], [CreatedDate], [ModifiedBy], 
+     [ModifiedDate], [ScreenID], [ScreenName], [ViewDisplayName], [CustomViewsID])
+VALUES
+    ('SSPCSdbo.v_OrderedListCalculationsDetails', '1', GETDATE(), NULL,
+     NULL, 440, NULL, 'OrderedListCalculationsDetailsView', NULL);
+
+
+
+CREATE VIEW SSPCSdbo.v_PatternActualData AS
+SELECT
+    [PatternActualDataID],
+    [PatternInterpretationID], 
+    [PatternUploadID],
+    [DieSetID],
+    [LineID],
+    [ShiftID],
+    [Date],
+    [PartSeq],
+    [PatternNo],
+    [PlanStartTime],
+    [PlanEndTime],
+    [LoadTime],
+    [TotalProdTime],
+    [DieStorageBay],
+    [PatternLotSize],
+    [RecLotSize],
+    [PlanLotSize],
+    [LotNo],
+    [Status],
+    [QueuedTime],
+    [ActualStartTime],
+    [ActualEndTime],
+    [ActualLoadTime],
+    [ActualLotsize],
+    [ActualOrderingTime],
+    [ActualOrderCycleID],
+    [PlanType],
+    [Reason],
+    [CreatedBy],
+    [CreatedDate],
+    [ModifiedBy],
+    [ModifiedDate]
+FROM [SSPCSdbo].[PatternActualData]
+
+
+
+
+INSERT INTO [dbo].[ViewScreenMapping]    
+
+    ([ViewName], [CreatedBy], [CreatedDate], [ModifiedBy], 
+     [ModifiedDate], [ScreenID], [ScreenName], [ViewDisplayName], [CustomViewsID])
+VALUES
+    ('SSPCSdbo.v_PatternActualData', '1', GETDATE(), NULL,
+     NULL, 440, NULL, 'PatternActualDataView', NULL);
+
+
+
+CREATE VIEW SSPCSdbo.v_PatternDataInterpretation AS
+    SELECT
+        [PatternInterpretationID],
+        [PatternUploadID],
+        [ScheduledDate],
+        [LineID],
+        [ShiftID],
+        [PatternNo],
+        [PartSeq],
+        [DieSetID],
+        [PatternStartTime],
+        [PatternEndTime],
+        [PatternLoadTime],
+        [ProjectedOrderingTime],
+        [ProjectedOrderCycleID],
+        [CreatedBy],
+        [CreatedDateTime],
+        [ModifiedBy],
+        [ModifiedDateTime]
+    FROM [SSPCSdbo].[PatternDataInterpretation]
+
+
+
+INSERT INTO [dbo].[ViewScreenMapping]
+    ([ViewName], [CreatedBy], [CreatedDate], [ModifiedBy], 
+     [ModifiedDate], [ScreenID], [ScreenName], [ViewDisplayName], [CustomViewsID])
+VALUES
+    ('SSPCSdbo.v_PatternDataInterpretation', '1', GETDATE(), NULL,
+     NULL, 440, NULL, 'PatternDataInterpretationView', NULL);
+
+
+
+CREATE VIEW SSPCSdbo.v_PatternRawDataUpload AS
+    SELECT 
+        [PatternUploadID],
+        [LineName],
+        [PatternNo],
+        [PartSeq],
+        [DieSet],
+        [DieStorageBay],
+        [LotCycle],
+        [PatternLotSize],
+        [SPS],
+        [AppendOrOverwrite],
+        [EffectiveFrom],
+        [EffectiveTo],
+        [TotalMaterialKanbanInCirculation],
+        [UDTime],
+        [CTTime],
+        [QCTime],
+        [MaterialChangeoverTimePerChangeover],
+        [PalletChangeoverTimePerChangeover],
+        [SDTime],
+        [NoOfPalletPerCycle],
+        [MaterialOrderTriggerInSec],
+        [ProductionTriggerInSec],
+        [Efficiency],
+        [RoundUpKanbanQty],
+        [RoundUpLotSize],
+        [NoOfSkids],
+        [CycleTime],
+        [MaterialChangeTimeInSec],
+        [PalletChangeTimeInSec],
+        [LineProductionTime],
+        [TotalProductionTime],
+        [SDWaitTime],
+        [SDLineProductionTime],
+        [EfficiencyPT],
+        [GSPS],
+        [ReferenceFileName],
+        [CreatedBy],
+        [CreatedDateTime],
+        [ModifiedBy],
+        [ModifiedDateTime]
+    FROM [SSPCSdbo].[PatternRawDataUpload]
+
+
+INSERT INTO [dbo].[ViewScreenMapping]
+    ([ViewName], [CreatedBy], [CreatedDate], [ModifiedBy], 
+     [ModifiedDate], [ScreenID], [ScreenName], [ViewDisplayName], [CustomViewsID])
+VALUES
+    ('SSPCSdbo.v_PatternRawDataUpload', '1', GETDATE(), NULL,
+     NULL, 440, NULL, 'PatternRawDataUploadView', NULL);
+
+
+
+CREATE VIEW SSPCSdbo.v_PatternShiftMapping AS
+    SELECT
+        [PatternShiftMappingID],
+        [LineName],
+        [PatternNo],
+        [ShiftID],
+        [ShiftCode]
+    FROM [SSPCSdbo].[PatternShiftMapping]
+
+
+INSERT INTO [dbo].[ViewScreenMapping]
+    ([ViewName], [CreatedBy], [CreatedDate], [ModifiedBy], 
+     [ModifiedDate], [ScreenID], [ScreenName], [ViewDisplayName], [CustomViewsID])
+VALUES
+    ('SSPCSdbo.v_PatternShiftMapping', '1', GETDATE(), NULL,
+     NULL, 440, NULL, 'PatternShiftMappingView', NULL);
+
+
+
+CREATE VIEW SSPCSdbo.v_PlanLotsizeCalculation AS
+    SELECT
+        [PlanLotsizeCalculationID],
+        [PatternActualDataID],
+        [DieSetID],
+        [kitItemId],
+        [RecomendedOrder],
+        [ProductionOrder],
+        [TotalKanbanInCirculation],
+        [Stock],
+        [KanbanReturned],
+        [Adjustment],
+        [CreatedBy],
+        [CreatedDate],
+        [ModifiedBy],
+        [ModifiedDate]
+    FROM [SSPCSdbo].[PlanLotsizeCalculation]
+
+
+INSERT INTO [dbo].[ViewScreenMapping]
+    ([ViewName], [CreatedBy], [CreatedDate], [ModifiedBy], 
+     [ModifiedDate], [ScreenID], [ScreenName], [ViewDisplayName], [CustomViewsID])
+VALUES
+    ('SSPCSdbo.v_PlanLotsizeCalculation', '1', GETDATE(), NULL,
+     NULL, 440, NULL, 'PlanLotsizeCalculationView', NULL);
+
+
+CREATE VIEW SSPCSdbo.v_PQDataUpload AS
+    SELECT
+        [PQDataID],
+        [LineName],
+        [EffectiveFrom],
+        [EffectiveTo],
+        [DieSet],
+        [Variant],
+        [PerDayVolume],
+        [NoOfWeldWorkingSecPerDay],
+        [NoOfSecOfSafetyStock],
+        [FLVTLotSize],
+        [TotalPartKanbansInCirculation],
+        [TotalFLVTMaterialKanbanInCirculation],
+        [PullRatePerSec],
+        [SafetyStock],
+        [RoundUpSafetyStock],
+        [ReferenceFileName],
+        [CreatedBy],
+        [CreatedDateTime],
+        [ModifiedBy],
+        [ModifiedDateTime]
+    FROM [SSPCSdbo].[PQDataUpload]
+
+
+INSERT INTO [dbo].[ViewScreenMapping]
+    ([ViewName], [CreatedBy], [CreatedDate], [ModifiedBy], 
+     [ModifiedDate], [ScreenID], [ScreenName], [ViewDisplayName], [CustomViewsID])
+VALUES
+    ('SSPCSdbo.v_PQDataUpload', '1', GETDATE(), NULL,
+     NULL, 440, NULL, 'PQDataUploadView', NULL);
+
+
+ALTER VIEW SSPCSdbo.v_PlannedLineStopMaster AS
+SELECT 
+    plsm.*,
+    sc.SKUCategoryCode AS Line,
+    sh.ShiftCode
+FROM [SSPCSdbo].[PlannedLineStopMaster] plsm
+LEFT JOIN [dbo].[SKUCategory] sc 
+    ON plsm.LineID = sc.SKUCategoryID
+LEFT JOIN [dbo].[ShiftHeader] sh 
+    ON plsm.ShiftID = sh.ShiftId
+
+
+	ALTER VIEW SSPCSdbo.v_PatternActualData AS
+SELECT 
+    pad.*,
+    btm.DieSet,
+    sc.SKUCategoryCode AS Line,
+    sh.ShiftCode
+FROM [SSPCSdbo].[PatternActualData] pad
+LEFT JOIN [SSPCSdbo].[BOMTypeMaster] btm 
+    ON pad.DieSetID = btm.DieSetID
+LEFT JOIN [dbo].[SKUCategory] sc 
+    ON pad.LineID = sc.SKUCategoryID
+LEFT JOIN [dbo].[ShiftHeader] sh 
+    ON pad.ShiftID = sh.ShiftId
+
+ALTER VIEW SSPCSdbo.v_PatternDataInterpretation AS
+SELECT 
+    pdi.*,
+    btm.DieSet,
+    sc.SKUCategoryCode AS Line,
+    sh.ShiftCode
+FROM [SSPCSdbo].[PatternDataInterpretation] pdi
+LEFT JOIN [SSPCSdbo].[BOMTypeMaster] btm 
+    ON pdi.DieSetID = btm.DieSetID
+LEFT JOIN [dbo].[SKUCategory] sc 
+    ON pdi.LineID = sc.SKUCategoryID
+LEFT JOIN [dbo].[ShiftHeader] sh 
+    ON pdi.ShiftID = sh.ShiftId
+
+
+ALTER VIEW SSPCSdbo.v_PatternRawDataUpload AS
+SELECT 
+    pru.*,
+    sc.SKUCategoryCode AS LineCode
+FROM [SSPCSdbo].[PatternRawDataUpload] pru
+LEFT JOIN [dbo].[SKUCategory] sc 
+    ON pru.LineName = sc.SKUCategoryCode
+
+
+ALTER VIEW SSPCSdbo.v_PlanLotsizeCalculation AS
+SELECT 
+    plc.*,
+    btm.DieSet,
+    sku.SKUCode AS KitItemCode
+FROM [SSPCSdbo].[PlanLotsizeCalculation] plc
+LEFT JOIN [SSPCSdbo].[BOMTypeMaster] btm 
+    ON plc.DieSetID = btm.DieSetID
+LEFT JOIN [dbo].[SKU] sku 
+    ON plc.kitItemId = sku.SKUID
+
+
+
+ALTER VIEW SSPCSdbo.v_PQDataUpload AS
+SELECT 
+    pq.*,
+    btm.DieSet AS BOMTypeDescription,
+    sc.SKUCategoryCode AS LineCode
+FROM [SSPCSdbo].[PQDataUpload] pq
+LEFT JOIN [SSPCSdbo].[BOMTypeMaster] btm 
+    ON pq.DieSet = btm.DieSet
+LEFT JOIN [dbo].[SKUCategory] sc 
+    ON pq.LineName = sc.SKUCategoryCode
+
+

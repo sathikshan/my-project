@@ -1,0 +1,388 @@
+ 
+IF NOT EXISTS (SELECT 1 FROM [dbo].[ViewScreenMapping]
+ 
+               WHERE [ViewName] = 'SSPCSCustomReports.v_MaterialLoadingView22A')
+ 
+BEGIN
+ 
+    INSERT INTO [dbo].[ViewScreenMapping]
+ 
+    ([ViewName], [CreatedBy], [CreatedDate], [ScreenID], [ScreenName], [ViewDisplayName])
+ 
+    VALUES
+ 
+    ('SSPCSCustomReports.v_MaterialLoadingView22A', 1, GETDATE(), 440, NULL, 'MaterialLoadingView22A');
+ 
+END;
+
+DROP VIEW [SSPCSCustomReports].[v_MaterialLoadingView22A]
+GO
+
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+
+ 
+CREATE VIEW [SSPCSCustomReports].[v_MaterialLoadingView22A] AS
+
+WITH DistinctKitBOM AS (
+    SELECT DISTINCT KitID, BOMType 
+    FROM KitBOM
+),
+ISWRCTE AS (
+    SELECT 
+        KitID, KitItemID
+    FROM KitBOM
+),
+MaxLotSizeCTE AS (
+    SELECT
+        SKUID,
+        MAX(LotSize) AS MaxLotSize
+    FROM
+        [dbo].[PurchaseLotSize]
+    GROUP BY
+        SKUID
+),
+ShiftDetails AS (
+ SELECT TOP 1
+    CurrentShift.ShiftId AS CurrentShiftID,
+    CurrentShift.ShiftCode AS CurrentShiftCode,
+    CAST(CASE
+        WHEN CurrentShift.ShiftStartTime > CurrentShift.ShiftEndTime 
+            AND CONVERT(TIME, GETDATE()) < CurrentShift.ShiftEndTime
+            THEN DATEADD(DAY, -1, CAST(CAST(GETDATE() AS DATE) AS DATETIME) + CAST(CurrentShift.ShiftStartTime AS DATETIME))
+        ELSE CAST(CAST(GETDATE() AS DATE) AS DATETIME) + CAST(CurrentShift.ShiftStartTime AS DATETIME)
+    END AS DATE) AS CurrentShiftDate,
+    CAST(CASE
+        WHEN CurrentShift.ShiftStartTime > CurrentShift.ShiftEndTime 
+            AND CONVERT(TIME, GETDATE()) < CurrentShift.ShiftEndTime
+            THEN DATEADD(DAY, -1, CAST(CAST(GETDATE() AS DATE) AS DATETIME) + CAST(CurrentShift.ShiftStartTime AS DATETIME))
+        ELSE CAST(CAST(GETDATE() AS DATE) AS DATETIME) + CAST(CurrentShift.ShiftStartTime AS DATETIME)
+    END AS DATETIME) AS CurrentShiftStartDateTime,
+    CAST(CASE
+        WHEN CurrentShift.ShiftStartTime > CurrentShift.ShiftEndTime
+            THEN DATEADD(DAY, 1, CAST(CAST(GETDATE() AS DATE) AS DATETIME) + CAST(CurrentShift.ShiftEndTime AS DATETIME))
+        ELSE CAST(CAST(GETDATE() AS DATE) AS DATETIME) + CAST(CurrentShift.ShiftEndTime AS DATETIME)
+    END AS DATETIME) AS CurrentShiftEndDateTime,
+
+    -- Previous Shift Calculations (Same logic as your original)
+    CAST(CASE
+        WHEN PreviousShift.ShiftStartTime > PreviousShift.ShiftEndTime
+            THEN DATEADD(DAY, -1,
+                CASE
+                    WHEN CONVERT(TIME, GETDATE()) BETWEEN '00:00:00' AND '14:45:00'
+                        THEN CAST(CAST(GETDATE() AS DATE) AS DATETIME)
+                    ELSE DATEADD(DAY, 0, CAST(CAST(GETDATE() AS DATE) AS DATETIME))
+                END + CAST(PreviousShift.ShiftStartTime AS DATETIME))
+        ELSE DATEADD(DAY,
+                CASE
+                    WHEN CONVERT(TIME, GETDATE()) BETWEEN '00:00:00' AND '14:45:00'
+                        THEN -1
+                    ELSE 0
+                END, CAST(CAST(GETDATE() AS DATE) AS DATETIME))
+                + CAST(PreviousShift.ShiftStartTime AS DATETIME)
+    END AS DATETIME) AS PreviousShiftStartDateTime,
+    
+    CAST(CASE
+        WHEN PreviousShift.ShiftStartTime > PreviousShift.ShiftEndTime
+            THEN CASE
+                    WHEN CONVERT(TIME, GETDATE()) BETWEEN '00:00:00' AND '14:45:00'
+                        THEN CAST(CAST(GETDATE() AS DATE) AS DATETIME)
+                    ELSE DATEADD(DAY, -1, CAST(CAST(GETDATE() AS DATE) AS DATETIME))
+                 END + CAST(PreviousShift.ShiftEndTime AS DATETIME)
+        ELSE DATEADD(DAY,
+                CASE
+                    WHEN CONVERT(TIME, GETDATE()) BETWEEN '00:00:00' AND '14:45:00'
+                        THEN -1
+                    ELSE 0
+                END, CAST(CAST(GETDATE() AS DATE) AS DATETIME))
+                + CAST(PreviousShift.ShiftEndTime AS DATETIME)
+    END AS DATETIME) AS PreviousShiftEndDateTime,
+
+    CAST(CASE
+        WHEN CONVERT(TIME, GETDATE()) BETWEEN '00:00:00' AND '14:45:00'
+            THEN DATEADD(DAY, -1, CAST(GETDATE() AS DATE))
+        ELSE CAST(GETDATE() AS DATE)
+    END AS DATE) AS PreviousShiftDate,
+    PreviousShift.ShiftId AS PreviousShiftID
+FROM
+    ShiftHeader AS CurrentShift
+CROSS JOIN
+    (SELECT
+        ShiftId, ShiftName, ShiftCode, ShiftStartTime, ShiftEndTime
+     FROM ShiftHeader
+     WHERE ShiftId = (
+         CASE
+             WHEN EXISTS (   
+                 SELECT 1
+                 FROM ShiftHeader
+                 WHERE ShiftId = 1
+                   AND (CONVERT(TIME, GETDATE()) BETWEEN ShiftStartTime AND ShiftEndTime
+                    OR ShiftStartTime > ShiftEndTime AND
+                       (CONVERT(TIME, GETDATE()) >= ShiftStartTime OR CONVERT(TIME, GETDATE()) < ShiftEndTime))
+             ) THEN 3
+             WHEN EXISTS (
+                 SELECT 1
+                 FROM ShiftHeader
+                 WHERE ShiftId = 2
+                   AND (CONVERT(TIME, GETDATE()) BETWEEN ShiftStartTime AND ShiftEndTime
+                    OR ShiftStartTime > ShiftEndTime AND
+                       (CONVERT(TIME, GETDATE()) >= ShiftStartTime OR CONVERT(TIME, GETDATE()) < ShiftEndTime))
+             ) THEN 1
+             WHEN EXISTS (
+                 SELECT 1
+                 FROM ShiftHeader
+                 WHERE ShiftId = 3
+                   AND (CONVERT(TIME, GETDATE()) BETWEEN ShiftStartTime AND ShiftEndTime
+                    OR ShiftStartTime > ShiftEndTime AND
+                       (CONVERT(TIME, GETDATE()) >= ShiftStartTime OR CONVERT(TIME, GETDATE()) < ShiftEndTime))
+             ) THEN 2
+             ELSE NULL
+         END
+     )) AS PreviousShift
+CROSS JOIN
+    (SELECT
+        ShiftId, ShiftName, ShiftCode, ShiftStartTime, ShiftEndTime
+     FROM ShiftHeader
+     WHERE ShiftId = (
+         CASE
+             WHEN EXISTS (   
+                 SELECT 1
+                 FROM ShiftHeader
+                 WHERE ShiftId = 1
+                   AND (CONVERT(TIME, GETDATE()) BETWEEN ShiftStartTime AND ShiftEndTime
+                    OR ShiftStartTime > ShiftEndTime AND
+                       (CONVERT(TIME, GETDATE()) >= ShiftStartTime OR CONVERT(TIME, GETDATE()) < ShiftEndTime))
+             ) THEN 2
+             WHEN EXISTS (
+                 SELECT 1
+                 FROM ShiftHeader
+                 WHERE ShiftId = 2
+                   AND (CONVERT(TIME, GETDATE()) BETWEEN ShiftStartTime AND ShiftEndTime
+                    OR ShiftStartTime > ShiftEndTime AND
+                       (CONVERT(TIME, GETDATE()) >= ShiftStartTime OR CONVERT(TIME, GETDATE()) < ShiftEndTime))
+             ) THEN 3
+             WHEN EXISTS (
+                 SELECT 1
+                 FROM ShiftHeader
+                 WHERE ShiftId = 3
+                   AND (CONVERT(TIME, GETDATE()) BETWEEN ShiftStartTime AND ShiftEndTime
+                    OR ShiftStartTime > ShiftEndTime AND
+                       (CONVERT(TIME, GETDATE()) >= ShiftStartTime OR CONVERT(TIME, GETDATE()) < ShiftEndTime))
+             ) THEN 1
+             ELSE NULL
+         END
+     )) AS NextShift
+WHERE
+    (CONVERT(TIME, GETDATE()) BETWEEN CurrentShift.ShiftStartTime AND CurrentShift.ShiftEndTime)
+    OR
+    (CurrentShift.ShiftStartTime > CurrentShift.ShiftEndTime AND
+     (CONVERT(TIME, GETDATE()) >= CurrentShift.ShiftStartTime OR CONVERT(TIME, GETDATE()) < CurrentShift.ShiftEndTime))
+
+   ),
+   
+FM_CTE AS (
+   SELECT
+    SKU.SKUID,
+    COUNT(DISTINCT CASE 
+            WHEN SKUStock.BucketQuantityInStorageUOM = MLS.MaxLotSize  
+                 AND StockBucket.StockBucketCode = 'OnHand' 
+            THEN SKUStock.LocationID
+            ELSE NULL
+        END) AS NoOfSkids,
+    CASE 
+        WHEN SUM(CASE 
+                    WHEN SKUStock.BucketQuantityInStorageUOM = MLS.MaxLotSize 
+                         AND StockBucket.StockBucketCode = 'OnHand' THEN SKUStock.BucketQuantityInStorageUOM
+                    ELSE 0 
+                END) = 0 
+        THEN CAST(0 AS DECIMAL(18,0)) 
+        ELSE CAST(SUM(CASE 
+                        WHEN SKUStock.BucketQuantityInStorageUOM = MLS.MaxLotSize 
+                             AND StockBucket.StockBucketCode = 'OnHand' THEN SKUStock.BucketQuantityInStorageUOM
+                        ELSE 0 
+                    END) AS DECIMAL(18,0)) 
+    END AS FMQuantity
+FROM
+    [dbo].[SKUStock] AS SKUStock
+JOIN
+    [dbo].[StockBucket] AS StockBucket 
+    ON SKUStock.StockBucketID = StockBucket.StockBucketID
+JOIN
+    [dbo].[SKUCOST] AS SKUCOST 
+    ON SKUStock.SKUCostID = SKUCOST.SKUCOSTID
+JOIN
+    [dbo].[SKUInventory] AS SKUInventory 
+    ON SKUCOST.SKUInventoryID = SKUInventory.SKUInventoryID
+JOIN
+    [dbo].[SKU] AS SKU 
+    ON SKUInventory.SKUID = SKU.SKUID
+LEFT JOIN
+    MaxLotSizeCTE AS MLS 
+    ON SKU.SKUID = MLS.SKUID
+GROUP BY
+    SKU.SKUID
+
+),
+RM_CTE AS (
+   SELECT
+    SKU.SKUID,
+    mls.MaxLotSize,
+    CASE 
+        WHEN SUM(CASE 
+                    WHEN SKUStock.BucketQuantityInStorageUOM < MLS.MaxLotSize 
+                         AND StockBucket.StockBucketCode = 'OnHand' THEN SKUStock.BucketQuantityInStorageUOM
+                    ELSE 0 
+                END) = 0 
+        THEN CAST(0 AS DECIMAL(18,0)) 
+        ELSE CAST(SUM(CASE 
+                        WHEN SKUStock.BucketQuantityInStorageUOM < MLS.MaxLotSize 
+                             AND StockBucket.StockBucketCode = 'OnHand' THEN SKUStock.BucketQuantityInStorageUOM
+                        ELSE 0 
+                    END) AS DECIMAL(18,0)) 
+    END AS RMQuantity,
+	COUNT(DISTINCT CASE 
+            WHEN SKUStock.BucketQuantityInStorageUOM < MLS.MaxLotSize 
+                 AND StockBucket.StockBucketCode = 'OnHand' THEN SKUStock.LocationID
+            ELSE NULL
+        END) AS NoOfSkids
+FROM
+    [dbo].[SKUStock] AS SKUStock
+JOIN
+    [dbo].[StockBucket] AS StockBucket 
+    ON SKUStock.StockBucketID = StockBucket.StockBucketID
+JOIN
+    [dbo].[SKUCOST] AS SKUCOST 
+    ON SKUStock.SKUCostID = SKUCOST.SKUCOSTID
+JOIN
+    [dbo].[SKUInventory] AS SKUInventory 
+    ON SKUCOST.SKUInventoryID = SKUInventory.SKUInventoryID
+JOIN
+    [dbo].[SKU] AS SKU 
+    ON SKUInventory.SKUID = SKU.SKUID
+LEFT JOIN
+    MaxLotSizeCTE AS MLS 
+    ON SKU.SKUID = MLS.SKUID
+GROUP BY
+    SKU.SKUID, mls.MaxLotSize
+),
+Washed_CTE AS (
+     SELECT
+        SKU.SKUID,
+		COUNT(DISTINCT SKUStock.LocationID) AS NoOfSkids,
+       SUM(CAST(SKUStock.BucketQuantityInStorageUOM AS INT)) AS WashedQuantity
+   FROM
+        [dbo].[SKUStock] AS SKUStock
+    JOIN
+        [dbo].[StockBucket] AS StockBucket ON SKUStock.StockBucketID = StockBucket.StockBucketID
+     JOIN
+        [dbo].[SKUCOST] AS SKUCOST ON SKUStock.SKUCostID = SKUCOST.SKUCOSTID  -- Link SKUStock to SKUCOST using SKUCostID
+    JOIN
+        [dbo].[SKUInventory] AS SKUInventory ON SKUCost.SKUInventoryID = SKUInventory.SKUInventoryID
+	join
+	   [dbo].SKU as sku on SKUInventory.SKUID=SKU.SKUID
+	   WHERE StockBucket.StockBucketCode = 'Washed'
+    GROUP BY
+        SKU.SKUID
+)
+
+SELECT
+    SSPCSdbo.PatternActualData.PartSeq,
+    SKU.Model AS [MODEL],
+    SKU.SKUCode AS [MATERIAL],
+    DistinctKitBOM.KitID,
+    SSPCSdbo.PatternActualData.LineID,
+    SSPCSdbo.PatternActualData.DieSetID,
+    SHIFTHEADER.ShiftName AS SHIFT,
+    SSPCSdbo.PatternActualData.Date,
+	CONCAT(
+    ISNULL(CAST(CEILING(SSPCSdbo.PatternActualData.PlanLotSize / NULLIF(MAX(spm.Quantity), 0)) AS DECIMAL(18,0)), 0),
+    '(', SSPCSdbo.PatternActualData.PlanLotSize , ')'
+) AS PlanLotSize,
+    CASE
+        WHEN SSPCSdbo.PatternActualData.Status IN (1, 2, 7) THEN 'Next'
+        WHEN SSPCSdbo.PatternActualData.Status = 4 THEN 'In Progress'
+        WHEN SSPCSdbo.PatternActualData.Status = 6 THEN 'Completed'
+        WHEN SSPCSdbo.PatternActualData.Status = 5 THEN 'Discontinued'
+        WHEN SSPCSdbo.PatternActualData.Status = 3 THEN 'Skipped'
+        ELSE 'Unknown'
+    END AS ProdStatus,
+	CONCAT(
+    ISNULL(CAST(FM_CTE.NoOfSkids AS DECIMAL(18,0)), 0),
+    '(', FM_CTE.FMQuantity, ')'
+) AS FM,
+CONCAT(
+    ISNULL(CAST(RM_CTE.NoOfSkids AS DECIMAL(18,0)), 0),
+    '(', RM_CTE.RMQuantity, ')'
+) AS RM,
+CONCAT(
+    ISNULL(CAST(Washed_CTE.NoOfSkids AS DECIMAL(18,0)), 0),
+    '(', Washed_CTE.WashedQuantity, ')'
+) AS SHEETWASHED,
+CONCAT(
+        -- Sum of all NoOfSkids (FM, RM, Washed)
+        ISNULL(CAST(FM_CTE.NoOfSkids AS DECIMAL(18,0)), 0) +
+        ISNULL(CAST(RM_CTE.NoOfSkids AS DECIMAL(18,0)), 0) +
+        ISNULL(CAST(Washed_CTE.NoOfSkids AS DECIMAL(18,0)), 0),
+        '(', 
+        
+        -- Sum of all Quantities (FMQuantity, RMQuantity, WashedQuantity)
+        ISNULL(CAST(FM_CTE.FMQuantity AS DECIMAL(18,0)), 0) +
+        ISNULL(CAST(RM_CTE.RMQuantity AS DECIMAL(18,0)), 0) +
+        ISNULL(CAST(Washed_CTE.WashedQuantity AS DECIMAL(18,0)), 0),
+        ')'
+    ) AS Total,
+    SM.ISSheetWashRequired
+FROM
+    SSPCSdbo.PatternActualData
+JOIN
+    SSPCSdbo.BOMTypeMaster ON SSPCSdbo.BOMTypeMaster.DieSetID = SSPCSdbo.PatternActualData.DieSetID
+JOIN
+    DistinctKitBOM ON DistinctKitBOM.BOMType COLLATE SQL_Latin1_General_CP1_CI_AS = SSPCSdbo.BOMTypeMaster.DieSet COLLATE SQL_Latin1_General_CP1_CI_AS
+JOIN
+    SKU ON SKU.SKUID = DistinctKitBOM.KitID
+JOIN
+    [dbo].[SKUInventory] AS SKUInventory ON SKU.SKUID = SKUInventory.SKUID
+JOIN
+    [dbo].[SKUCOST] AS SKUCOST ON SKUInventory.SKUInventoryID = SKUCOST.SKUInventoryID
+LEFT JOIN
+   [dbo].[SKUStock] AS SKUStock ON SKUCOST.SKUCOSTID = SKUStock.SKUCostID
+LEFT JOIN
+    [dbo].[StockBucket] AS StockBucket ON SKUStock.StockBucketID = StockBucket.StockBucketID
+JOIN
+    [dbo].[ShiftHeader] AS SHIFTHEADER ON SHIFTHEADER.ShiftId = SSPCSdbo.PatternActualData.ShiftID
+LEFT JOIN
+    MaxLotSizeCTE AS MLS ON SKU.SKUID = MLS.SKUID
+LEFT JOIN
+    ISWRCTE AS ISWR ON SKU.SKUID = ISWR.KitID
+LEFT JOIN
+    SSPCSdbo.SKUMaster AS SM ON ISWR.KitItemID = SM.SKUID
+LEFT JOIN
+    SKUPackMapping spm ON ISWR.KitItemID  = spm.SKUID
+    
+JOIN
+    ShiftDetails ON (
+          (ShiftDetails.CurrentShiftID = SSPCSdbo.PatternActualData.ShiftID AND ShiftDetails.CurrentShiftDate = SSPCSdbo.PatternActualData.Date)
+	 )
+LEFT JOIN
+    FM_CTE ON SKU.SKUID = FM_CTE.SKUID  -- Join the FM_CTE to the main query
+LEFT JOIN
+    RM_CTE ON SKU.SKUID = RM_CTE.SKUID  
+LEFT JOIN
+    Washed_CTE ON SKU.SKUID = Washed_CTE.SKUID  	
+WHERE 
+   SSPCSdbo.PatternActualData.LineID = 3
+GROUP BY
+     SSPCSdbo.PatternActualData.Status,
+    SSPCSdbo.PatternActualData.Date, SSPCSdbo.PatternActualData.LineID, 
+    SSPCSdbo.PatternActualData.DieSetID,  SSPCSdbo.PatternActualData.PartSeq,  SSPCSdbo.PatternActualData.PlanLotSize
+	, SM.ISSheetWashRequired,Washed_CTE.WashedQuantity,FM_CTE.FMQuantity,RM_CTE.RMQuantity,MLS.MaxLotSize,Washed_CTE.NoOfSkids,RM_CTE.NoOfSkids,FM_CTE.NoOfSkids,
+	SKU.Model, SKU.SKUCode, DistinctKitBOM.KitID,SHIFTHEADER.ShiftName
+
+GO
+
+
